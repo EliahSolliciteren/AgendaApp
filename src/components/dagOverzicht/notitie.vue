@@ -237,8 +237,8 @@ let hoogteEinde =this.$refs.kader.getClientRects()[0].height
 const breedteVerrandering=breedteEinde-this.breedteStart
 const hoogteVerrandering=hoogteEinde-this.hoogteStart
 //console.log(breedteVerrandering, hoogteVerrandering) //DOMrect index 0, geen eenheden
-this.breedteStart=0;
-this.hoogteStart=0
+//this.breedteStart=0;
+//this.hoogteStart=0
 
 if(!this.omvangsObject.hasOwnProperty(this.dag)){
 this.omvangsObject[this.dag]={}
@@ -254,8 +254,8 @@ this.omvangsObject[this.dag][this.id].hoogteVerrandering=this.omvangsObject[this
 
 }
 
-store.dispatch('kalender/omvangsObject',this.omvangsObject)
-
+this.$store.dispatch('kalender/omvangsObject',this.omvangsObject)
+//console.log(this.omvangsObject)
 
 
 

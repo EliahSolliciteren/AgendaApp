@@ -4,14 +4,14 @@
 
 
 
-<div draggable="true" :key="index" ref="notitieArray" v-for="notitie,index in notities" >
+<div draggable="true" :key='Object.keys(notitie)[0]' ref="notitieArray" v-for="notitie,index in notities" >
 
-<notitie ref="notitie" @sluiten="resetPossitie()"  :index="index" :notitie="notitie"  :id="'nr'+ index"   :style="opmaakLijst(index)" > </notitie>
+<notitie ref="notitie" @mousedown=eenFunctie @sluiten="resetPossitie()"  :index="index" :notitie="notitie"  :id="'nr'+ index"   :style="opmaakLijst(index)" > </notitie>
 
 </div>
 
 
-
+{{de_state}}
 
 
 
@@ -77,7 +77,10 @@ tijdsValidatie(){let tijdsvalidatie=this.$store.getters['kalender/tijdsValidatie
   else{return ''}},
 omvangsObject(){
  // console.log(this.$store.getters['kalender/omvangsObject'])
-return this.$store.getters['kalender/omvangsObject']},
+return this.$store.getters['kalender/omvangsObject']||{}},
+possitieObjectStore(){
+  return this.$store.getters['kalender/possitieObject']||{}},
+
 
 
 
@@ -86,7 +89,7 @@ return this.$store.getters['kalender/omvangsObject']},
 
 // dimensies van het body
 breedte(){return parseInt(this.breedtebody)*1/3 + 'px'},
-hoogte(){return this.ypositiebody + 'px' }, //width returnde 0 en volgens grid top=15% height
+hoogte(){return this.ypositiebody}, //width returnde 0 en volgens grid top=15% height
 ypositie(){return this.ypositiebody*13/10},
 xpositie(){return this.xpositiebody*13/12 },
 de_state(){return this.$store.state.kalender},
@@ -112,7 +115,17 @@ de_state(){return this.$store.state.kalender},
 
 
 methods:{
-test(e){
+eenFunctie(e){
+console.log(e)
+
+
+
+
+},
+
+
+
+  test(e){
   //console.log(e)//muis aan het begin van het slepen
 const dragstartX=e.clientX
 const dragstartY=e.clientY
@@ -151,144 +164,59 @@ else{
   this.possitieObject[this.dag][id].yverplaatsing=this.possitieObject[this.dag][id].yverplaatsing+y_richting
 
 }
-
-
+//console.log(this.possitieObject) //Spelling!!
+this.$store.dispatch('kalender/possitieObject', this.possitieObject)
 },
 
 opmaakLijst(index){
 let style={}
 const id= 'notitie'+index
-//alert(id)
-if(!this.possitieObject.hasOwnProperty(this.dag)||(!this.possitieObject[this.dag].hasOwnProperty(id))){
-
-//console.log(1)
-
-
-if(!this.omvangsObject.hasOwnProperty(this.dag)||!this.omvangsObject[this.dag].hasOwnProperty(id)){
-
-  style.width=this.breedtebody/3+'px'
-  style.height=this.hoogte //'px al aanwezig'
-  
+//console.log(this.$refs.notitieArray/*.getClientRects()*/)
+//console.log(Object.keys(notitie))
+const possitieObject=this.possitieObjectStore
+const omvangsObject=this.omvangsObject
+if (!omvangsObject.hasOwnProperty(this.dag)){
+omvangsObject[this.dag]={}
+}
+if (!omvangsObject[this.dag].hasOwnProperty(id)){
+omvangsObject[this.dag][id]={}
+omvangsObject[this.dag][id].breedteVerrandering=10
+omvangsObject[this.dag][id].hoogteVerrandering=0
 
 }
-else{
-  
- style.width=(this.breedtebody/3+this.omvangsObject[this.dag][id].breedteVerrandering  )+'px'
-style.height=(parseFloat(this.hoogte.slice(0,-2))+this.omvangsObject[this.dag][id].hoogteVerrandering)+'px'
+if (!possitieObject.hasOwnProperty(this.dag)){
+possitieObject[this.dag]={}
+}
+if (!possitieObject[this.dag].hasOwnProperty(id)){
 
+possitieObject[this.dag][id]={}
+possitieObject[this.dag][id].xverplaatsing=0
+possitieObject[this.dag][id].yverplaatsing=0
 
 }
-
-
-  style.position='absolute'
-style.top=(this.ypositie*0.75+this.ypositie*0.7*(index+(index+1)%2))+'px'
-style.left=(this.xpositie + this.xpositie*2*(index%2))+'px'
-this.$store.dispatch('kalender/positie',{positie:{width:style.width,height:style.height,top:style.top,left:style.left }, dag:this.dag, id:this.id})
-
-
-return style
-
-}else if(!this.possitieObject.hasOwnProperty(this.dag)||(!this.possitieObject[this.dag].hasOwnProperty(id)))
-{
-  if(!this.omvangsObject.hasOwnProperty(this.dag)||!this.omvangsObject[this.dag].hasOwnProperty(id)){
-  style.width=this.breedtebody/3+'px'
- style.height=this.hoogte
-  }else{
-    if(isNaN(this.breedtebody)){
-      style.width=(parseFloat(this.breedtebody.slice(0,-2))/3 + this.omvangsObject[this.dag][id].breedteVerrandering                   +'px')
-    }
-    else{
-    style.width=this.breedtebody/3 + this.omvangsObject[this.dag][id].breedteVerrandering                   +'px'
-    }
-    if (isNaN(this.hoogte)){
-    style.height=(parseFloat(this.hoogte.slice(0,-2))+ this.omvangsObject[this.dag][id].hoogteVerrandering) + 'px'
-  }else{
-    style.height=(this.hoogte + this.omvangsObject[this.dag][id].hoogteVerrandering) + 'px'
-
-  }
-
-
-  }
- style.top=(this.notities.find(e=>e.id==id).positie[0].top+'px')//=standaartop aangepast met de verplaatsing in de y-richt
-style.left=(this.notities.find(e=>e.id==id).positie[0].left+'px')
 style.position='absolute'
+const hoogte=this.ypositiebody*13/10
+
+
+
+
+style.width=(parseFloat(this.breedtebody/3)+parseFloat(omvangsObject[this.dag][id].breedteVerrandering)  )+'px'
+
+style.height=(hoogte+omvangsObject[this.dag][id].hoogteVerrandering)+'px'
+
+
+
+  style.top=(this.ypositie*0.75+this.ypositie*0.7*(index+(index+1)%2)-possitieObject[this.dag][id].yverplaatsing)      +'px'
+console.log(style)
+
+  
+
+  style.left=((this.xpositie + this.xpositie*2*(index%2))-possitieObject[this.dag][id].xverplaatsing) + 'px'
+console.log(style)
+
+
 
 return style
-
-}
-else if(this.possitieObject.hasOwnProperty(this.dag)&&(this.possitieObject[this.dag].hasOwnProperty(id)))
-{
-  
-  if(!this.omvangsObject.hasOwnProperty(this.dag)||!this.omvangsObject[this.dag].hasOwnProperty(id)){
-    
-    style.width=this.breedtebody/3+'px'
-  style.height=this.hoogte
-  
-}else{
- 
-  if (isNaN(this.breedtebody)){
-    console.log(breedtebody)
-    style.width=(parseFloat(this.breedtebody.slice(0,-2))/3 + this.omvangsObject[this.dag][id].breedteVerrandering) +'px'
-
-
-  }else{
-    //console.log('3C')
-    style.width=(this.breedtebody/3 + this.omvangsObject[this.dag][id].breedteVerrandering) +'px'
-  }
-if (isNaN(this.hoogte)){//console.log('3D')
-  style.height=(parseFloat(this.hoogte.slice(0,-2)) + this.omvangsObject[this.dag][id].hoogteVerrandering)+'px'
-}else{
-
-    style.height=(this.hoogte + this.omvangsObject[this.dag][id].hoogteVerrandering)
-
-  }} 
-
- style.top=(this.ypositie*0.75+this.ypositie*0.7*(index+(index+1)%2)-this.possitieObject[this.dag][id].yverplaatsing)      +'px'//=standaartop aangepast met de verplaatsing in de y-richt
-style.left=((this.xpositie + this.xpositie*2*(index%2))-this.possitieObject[this.dag][id].xverplaatsing) + 'px'
-style.position='absolute'
-
-return style
-}
-else{ 
-  
-  
-  
-  if(!this.omvangsObject.hasOwnProperty(this.dag)||!this.omvangsObject[this.dag].hasOwnProperty(id)){
-
-  style.width=this.breedtebody/3+'px'
-  style.height=this.hoogte
-} 
-else{
-
-  
-  if (isNaN(this.breedtebody)){
-    style.width=(parseFloat(this.breedtebody.slice(0,-2))/3 + this.omvangsObject[this.dag][id].breedteVerrandering) +'px'
-
-
-  }else{
-    style.width=(this.breedtebody/3 + this.omvangsObject[this.dag][id].breedteVerrandering) +'px'
-  }
-if (isNaN(this.hoogte)){
-  style.height=(parseFloat(this.hoogte.slice(0,-2)) + this.omvangsObject[this.dag][id].hoogteVerrandering)+'px'
-}else{
-
-    style.height=(this.hoogte + this.omvangsObject[this.dag][id].hoogteVerrandering)
-  }
-
-}
-  
-  
-  
-  
-  style.top=(this.ypositie*0.75+this.ypositie*0.7*(index+(index+1)%2)-this.possitieObject[this.dag][id].yverplaatsing)      +'px'//=standaartop aangepast met de verplaatsing in de y-richt
-style.left=((this.xpositie + this.xpositie*2*(index%2))-this.possitieObject[this.dag][id].xverplaatsing) + 'px'
-style.position='absolute'
-return style
-
-
-
-}
-
 },
 
 tijdsvalidatieMethod(validatieboodschap){
@@ -362,7 +290,7 @@ $vm.hoogtebody=document.getElementsByClassName('body')[0].clientHeight
 $vm.xpositiebody=document.getElementsByClassName('body')[0].getClientRects()[0].x 
 
 $vm.ypositiebody=document.getElementsByClassName('body')[0].getClientRects()[0].y
-
+console.log($vm.ypositiebody)
 
 
 
@@ -372,7 +300,7 @@ $vm.ypositiebody=document.getElementsByClassName('body')[0].getClientRects()[0].
 created(){
 
 window.scrollTo(0,0)
-
+//setTimeout(function() {window.scrollTo(0, 0);},1)
 
 }
 

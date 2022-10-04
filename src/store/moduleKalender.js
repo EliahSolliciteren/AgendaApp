@@ -6,7 +6,8 @@ const state={
  event:[],
  huidigeDag:'' , //Die had ik vroeger hier moeten zetten.
  verwijderd:[],
- omvangsObject:''
+ omvangsObject:{},
+ possitieObject:{},
 
     
     
@@ -83,7 +84,9 @@ tijdsValidatie({commit}, payload){
 omvangsObject({commit}, hetObject){
     commit('OMVANGSOBJECT',hetObject) 
 },
-
+possitieObject({commit}, hetObject){
+    commit('POSSITIEOBJECT',hetObject) 
+},
 
 
 
@@ -208,12 +211,17 @@ OMVANGSOBJECT(state,omvangsObject){
     //console.log(state.omvangsObject)
     },
 
+
+POSSITIEOBJECT(state,possitieObject){
+    state.possitieObject=possitieObject
+}
 }
 const getters={
 notitie: (state)=>{return state},
 tijdsValidatie: (state)=>{return state.tijdsValidatie},
 verwijderd:(state)=>{return state.verwijderd},
-omvangsObject:(state)=>{return state.omvangsObject}
+omvangsObject:(state)=>{return state.omvangsObject},
+possitieObject:(state)=>{return state.possitieObject},
 }
 
 
