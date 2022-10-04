@@ -1,0 +1,23 @@
+{
+  "name": "mijnagenda",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "persisted-state-vuex": "^1.1.0",
+    "vue": "^3.2.38",
+    "vue-persistent-state": "^0.2.1",
+    "vue-router": "^4.1.5",
+    "vuex": "^4.0.2",
+    "vuex-persistedstate": "^4.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^3.0.3",
+    "sass": "^1.55.0",
+    "vite": "^3.0.9"
+  }
+}
