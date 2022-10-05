@@ -1,6 +1,6 @@
 <template>
     
-<div class="geheelN" v-if="!verwijderd" ref='kader' @input="updateNotitie" @mousedown="HoogteEnBreedte1" @mouseup="HoogteEnBreedte2">
+<div class="geheelN" v-if="!verwijderd" ref='kader' @input="updateNotitie" >
     <button class="timerKnop" v-if="!uur"  @mouseover="uur=true" >uur</button>
 <input v-model="notitieuur" class="timerdisplay" v-if="uur"   @blur="muistimer"  /> 
 <input   v-model="titel" placeholder="Geef mij een titel" class="titel" />         
@@ -8,8 +8,8 @@
 <div   class="tekst" @keyup="doeOpmaak" ref='tekst' contenteditable='true'  data-placeholder="Wat zou je willen onthouden?" >
 
 
-
 {{tekst}}
+
 </div>
 
 <div class="opmaak">
@@ -262,7 +262,16 @@ this.$store.dispatch('kalender/omvangsObject',this.omvangsObject)
 
 }
 },
+mounted(){
+let $vm =this
 
+$vm.$refs.tekst.innerHTML=$vm.tekst
+
+
+
+
+
+},
 
 
 

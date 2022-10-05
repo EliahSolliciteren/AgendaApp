@@ -1,12 +1,12 @@
 <template >
- <div class="body" ref="body" @dragstart="test" @dragend="test2" @mousedown="HoogteEnBreedte1">
+ <div class="body" ref="body" @dragstart="test" @dragend="test2" @mousedown="HoogteEnBreedte1" @mouseup="HoogteEnBreedte2">
 
 
 
 
 <div draggable="true" :key='Object.keys(notitie)[0]' ref="notitieArray" v-for="notitie,index in notities" >
 
-<notitie ref="notitie" @mousedown=eenFunctie @sluiten="resetPossitie()"  :index="index" :notitie="notitie"  :id="'nr'+ index"   :style="opmaakLijst(index)" > </notitie>
+<notitie ref="notitie"  @sluiten="resetPossitie()"  :index="index" :notitie="notitie"  :id="'nr'+ index"   :style="opmaakLijst(index)" > </notitie>
 
 </div>
 
@@ -50,12 +50,14 @@ validatieLeft:'',
 validatieWidth:'',
 breedte:'',
 verplaatsen:true,
-
+breedteStart:0,
+hoogteStart:0,
 
 
 
 verplaatst:{},
-possitieObject:{}
+possitieObject:{},
+omvangsObject:{}
 }
 
 
@@ -75,8 +77,10 @@ tijdsValidatie(){let tijdsvalidatie=this.$store.getters['kalender/tijdsValidatie
   if (tijdsvalidatie.dag==this.dag){
   return tijdsvalidatie }
   else{return ''}},
-omvangsObject(){
+omvangsObjectStore(){
  // console.log(this.$store.getters['kalender/omvangsObject'])
+ /*console.log(this.$store.getters['kalender/omvangsObject'][this.dag])*/
+
 return this.$store.getters['kalender/omvangsObject']||{}},
 possitieObjectStore(){
   return this.$store.getters['kalender/possitieObject']||{}},
@@ -115,10 +119,41 @@ de_state(){return this.$store.state.kalender},
 
 
 methods:{
-eenFunctie(e){
-console.log(e)
+  HoogteEnBreedte1(e){
+
+this.breedteStart=e.srcElement.style.width
+this.hoogteStart=e.srcElement.style.height
 
 
+}, //dagZoeker en alarm nog doen.
+HoogteEnBreedte2(e){
+const id='notitie'+e.target.id.match( /\d+/g )    
+let breedteEinde =e.srcElement.style.width
+let hoogteEinde =e.srcElement.style.height
+//console.log(hoogteEinde,breedteEinde)
+const breedteVerrandering=breedteEinde-this.breedteStart
+const hoogteVerrandering=hoogteEinde-this.hoogteStart
+//console.log(breedteVerrandering, hoogteVerrandering) //DOMrect index 0, geen eenheden
+//this.breedteStart=0;
+//this.hoogteStart=0
+
+if(!this.omvangsObject.hasOwnProperty(this.dag)){
+this.omvangsObject[this.dag]={}
+}
+if(!this.omvangsObject[this.dag].hasOwnProperty(id)){
+this.omvangsObject[this.dag][id]={}
+this.omvangsObject[this.dag][id].breedteVerrandering=breedteVerrandering
+this.omvangsObject[this.dag][id].hoogteVerrandering=hoogteVerrandering
+
+}else{
+this.omvangsObject[this.dag][id].breedteVerrandering=this.omvangsObject[this.dag][id].breedteVerrandering+breedteVerrandering
+this.omvangsObject[this.dag][id].hoogteVerrandering=this.omvangsObject[this.dag][id].hoogteVerrandering+hoogteVerrandering
+
+}
+
+this.$store.dispatch('kalender/omvangsObject',this.omvangsObject)
+
+console.log(this.omvangsObject)
 
 
 },
@@ -171,16 +206,20 @@ this.$store.dispatch('kalender/possitieObject', this.possitieObject)
 opmaakLijst(index){
 let style={}
 const id= 'notitie'+index
-//console.log(this.$refs.notitieArray/*.getClientRects()*/)
-//console.log(Object.keys(notitie))
+
+
+
 const possitieObject=this.possitieObjectStore
+//console.log(possitieObject[this.dag].hasOwnProperty(id))
 const omvangsObject=this.omvangsObject
+//console.log(Object.keys(omvangsObject[this.dag]))
+
 if (!omvangsObject.hasOwnProperty(this.dag)){
 omvangsObject[this.dag]={}
 }
 if (!omvangsObject[this.dag].hasOwnProperty(id)){
 omvangsObject[this.dag][id]={}
-omvangsObject[this.dag][id].breedteVerrandering=10
+omvangsObject[this.dag][id].breedteVerrandering=0
 omvangsObject[this.dag][id].hoogteVerrandering=0
 
 }
@@ -200,19 +239,19 @@ const hoogte=this.ypositiebody*13/10
 
 
 
-style.width=(parseFloat(this.breedtebody/3)+parseFloat(omvangsObject[this.dag][id].breedteVerrandering)  )+'px'
-
+style.width=this.breedtebody/3+omvangsObject[this.dag][id].breedteVerrandering  +'px'
 style.height=(hoogte+omvangsObject[this.dag][id].hoogteVerrandering)+'px'
+//console.log(omvangsObject[this.dag][id].breedteVerrandering)
 
 
 
   style.top=(this.ypositie*0.75+this.ypositie*0.7*(index+(index+1)%2)-possitieObject[this.dag][id].yverplaatsing)      +'px'
-console.log(style)
+
 
   
 
   style.left=((this.xpositie + this.xpositie*2*(index%2))-possitieObject[this.dag][id].xverplaatsing) + 'px'
-console.log(style)
+//console.log(style)
 
 
 
@@ -290,7 +329,7 @@ $vm.hoogtebody=document.getElementsByClassName('body')[0].clientHeight
 $vm.xpositiebody=document.getElementsByClassName('body')[0].getClientRects()[0].x 
 
 $vm.ypositiebody=document.getElementsByClassName('body')[0].getClientRects()[0].y
-console.log($vm.ypositiebody)
+//console.log($vm.ypositiebody)
 
 
 
