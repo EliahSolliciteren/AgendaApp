@@ -208,7 +208,7 @@ state.tijdsValidatie=payload
 },
 OMVANGSOBJECT(state,omvangsObject){
     state.omvangsObject=omvangsObject
-    //console.log(state.omvangsObject)
+    
     },
 
 

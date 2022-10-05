@@ -4,7 +4,7 @@
 
 
 
-<div draggable="true" :key='Object.keys(notitie)[0]' ref="notitieArray" v-for="notitie,index in notities" >
+<div draggable="true" :key="index+ dag" ref="notitieArray" v-for="notitie,index in notities" >
 
 <notitie ref="notitie"  @sluiten="resetPossitie()"  :index="index" :notitie="notitie"  :id="'nr'+ index"   :style="opmaakLijst(index)" > </notitie>
 
@@ -130,12 +130,13 @@ HoogteEnBreedte2(e){
 const id='notitie'+e.target.id.match( /\d+/g )    
 let breedteEinde =e.srcElement.style.width
 let hoogteEinde =e.srcElement.style.height
-//console.log(hoogteEinde,breedteEinde)
-const breedteVerrandering=breedteEinde-this.breedteStart
-const hoogteVerrandering=hoogteEinde-this.hoogteStart
+
+const breedteVerrandering=parseFloat(breedteEinde)-parseFloat(this.breedteStart)
+const hoogteVerrandering=parseFloat(hoogteEinde)-parseFloat(this.hoogteStart)
 //console.log(breedteVerrandering, hoogteVerrandering) //DOMrect index 0, geen eenheden
-//this.breedteStart=0;
-//this.hoogteStart=0
+
+//console.log(breedteEinde,this.breedteStart)
+//console.log(hoogteEinde, this.hoogteStart)
 
 if(!this.omvangsObject.hasOwnProperty(this.dag)){
 this.omvangsObject[this.dag]={}
@@ -150,7 +151,7 @@ this.omvangsObject[this.dag][id].breedteVerrandering=this.omvangsObject[this.dag
 this.omvangsObject[this.dag][id].hoogteVerrandering=this.omvangsObject[this.dag][id].hoogteVerrandering+hoogteVerrandering
 
 }
-
+//console.log(this.omvangsObject[this.dag])
 this.$store.dispatch('kalender/omvangsObject',this.omvangsObject)
 
 console.log(this.omvangsObject)
@@ -211,8 +212,8 @@ const id= 'notitie'+index
 
 const possitieObject=this.possitieObjectStore
 //console.log(possitieObject[this.dag].hasOwnProperty(id))
-const omvangsObject=this.omvangsObject
-//console.log(Object.keys(omvangsObject[this.dag]))
+const omvangsObject=this.omvangsObjectStore
+
 
 if (!omvangsObject.hasOwnProperty(this.dag)){
 omvangsObject[this.dag]={}

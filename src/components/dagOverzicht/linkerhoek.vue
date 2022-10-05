@@ -31,7 +31,7 @@
       // console.log(jaar + ' ' + maand + ' '+ dag)  
    
         return BeginVanDeDag2
-    },//Het DRY principe ontgaat me soms. Methode globaal te definiëren
+    },//Methode globaal te definiëren
     MaandInNederlands(){
 let maand=''
     switch(this.maand){

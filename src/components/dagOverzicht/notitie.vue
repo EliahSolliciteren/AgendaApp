@@ -222,51 +222,23 @@ updateNotitie(event){
 
  //hooks altijd met haken, computed zonder
 
-HoogteEnBreedte1(){
-
-this.breedteStart=this.$refs.kader.getClientRects()[0].width
-this.hoogteStart=this.$refs.kader.getClientRects()[0].height
 
 
-}, //dagZoeker en alarm nog doen.
-HoogteEnBreedte2(){
-    
-let breedteEinde =this.$refs.kader.getClientRects()[0].width
-let hoogteEinde =this.$refs.kader.getClientRects()[0].height
-//console.log(hoogteEinde,breedteEinde)
-const breedteVerrandering=breedteEinde-this.breedteStart
-const hoogteVerrandering=hoogteEinde-this.hoogteStart
-//console.log(breedteVerrandering, hoogteVerrandering) //DOMrect index 0, geen eenheden
-//this.breedteStart=0;
-//this.hoogteStart=0
-
-if(!this.omvangsObject.hasOwnProperty(this.dag)){
-this.omvangsObject[this.dag]={}
-}
-if(!this.omvangsObject[this.dag].hasOwnProperty(this.id)){
-this.omvangsObject[this.dag][this.id]={}
-this.omvangsObject[this.dag][this.id].breedteVerrandering=breedteVerrandering
-this.omvangsObject[this.dag][this.id].hoogteVerrandering=hoogteVerrandering
-
-}else{
-this.omvangsObject[this.dag][this.id].breedteVerrandering=this.omvangsObject[this.dag][this.id].breedteVerrandering+breedteVerrandering
-this.omvangsObject[this.dag][this.id].hoogteVerrandering=this.omvangsObject[this.dag][this.id].hoogteVerrandering+hoogteVerrandering
-
-}
-
-this.$store.dispatch('kalender/omvangsObject',this.omvangsObject)
-//console.log(this.omvangsObject)
+//dagZoeker en alarm nog doen.
 
 
 
 
-}
+
+
+
 },
 mounted(){
 let $vm =this
-
-$vm.$refs.tekst.innerHTML=$vm.tekst
-
+try{
+$vm.$refs.tekst.innerHTML=$vm.tekst //anders tags <li> 
+}
+catch{}
 
 
 
